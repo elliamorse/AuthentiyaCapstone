@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "name": "Text Corrector",
+    "version": "1.0",
+    "description": "A Chrome extension for text correction.",
+    "icons": {
+      "48": "assets/default.png"
+    },
+    "permissions": [
+      "activeTab",
+      "storage",
+      "<https://your-backend-url.com/>"
+    ],
+    "browser_action": {
+      "default_icon": "assets/default.png",
+      "default_popup": "popup.html"
+    },
+    "background": {
+      "scripts": ["js/background.js"],
+      "persistent": false
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["js/content.js"],
+        "css": ["css/styles.css"],
+        "run_at": "document_end"
+      }
+    ],
+    "web_accessible_resources": ["js/content.js"]
+  }
