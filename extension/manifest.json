@@ -1,31 +1,36 @@
 {
-    "manifest_version": 2,
-    "name": "Text Corrector",
+    "manifest_version": 3,
+    "name": "Authentiya",
+    "description": "A Chrome extension AI detection.",
     "version": "1.0",
-    "description": "A Chrome extension for text correction.",
     "icons": {
-      "48": "assets/default.png"
+        "48": "assets/default.png"
     },
-    "permissions": [
-      "activeTab",
-      "storage",
-      "<https://your-backend-url.com/>"
-    ],
-    "browser_action": {
-      "default_icon": "assets/default.png",
-      "default_popup": "popup.html"
+
+    "action": {
+        "default_icon": "assets/default.png",
+        "default_popup": "popup.html"
     },
     "background": {
-      "scripts": ["js/background.js"],
-      "persistent": false
+        "service_worker": "js/background.js"
     },
     "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "js": ["js/content.js"],
-        "css": ["css/styles.css"],
-        "run_at": "document_end"
-      }
+        {
+            "matches": ["https://*/*"],
+            "js": ["js/content.js"],
+            "css": ["css/styles.css"],
+            "run_at": "document_start"
+        }
     ],
-    "web_accessible_resources": ["js/content.js"]
-  }
+    "web_accessible_resources": [
+        {
+            "resources": ["js/content.js"],
+            "matches": ["https://*/*"]
+        }
+    ],
+    "permissions": [
+        "activeTab",
+        "storage",
+        "<https://your-backend-url.com/>"
+    ]
+}
