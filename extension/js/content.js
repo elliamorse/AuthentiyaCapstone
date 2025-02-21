@@ -1,53 +1,66 @@
 // Content Script
 // This script interacts with the DOM of the pages where the extension is active.
 
-// Create and append the icon to the document body.
-const icon = document.createElement('img');
-icon.src = chrome.runtime.getURL('assets/icon.png');
-icon.id = 'myExtensionIcon';
-document.body.appendChild(icon);
+const domain = window.location.origin;
 
-// Event listener for icon clicks.
-icon.addEventListener('click', () => {
-  const text = getTextFromInput();
-  if (text) {
-    // Send the text to the backend for correction.
-    fetch('https://your-backend-url.com/correct-text', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ text: text })
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Replace the original text with the corrected text.
-      replaceText(data.correctedText);
-    })
-    .catch(error => console.error('Error:', error));
-  }
-});
+isCanvasDomain();
 
-// Function to get text from the active input field.
-function getTextFromInput() {
-    // Get the active element
-    const activeElement = document.activeElement;
-    
-    // Check if the active element is a text input or textarea
-    if (activeElement && (activeElement.tagName.toLowerCase() === 'input' || activeElement.tagName.toLowerCase() === 'textarea')) {
-        return activeElement.value;
-    }
-    
-    return null;
+function isCanvasDomain() {
+    chrome.storage.sync.get(['canvas_domains'], result => {
+        let storedDomains = result.canvas_domains || [];
+
+        if (storedDomains.includes(domain)) {
+            startExtension();
+            return
+        }
+
+        verifyCanvasAPI(domain);
+    });
 }
 
-// Function to replace text in the active input field.
-function replaceText(correctedText) {
-    // Get the active element
-    const activeElement = document.activeElement;
-    
-    // Check if the active element is a text input or textarea
-    if (activeElement && (activeElement.tagName.toLowerCase() === 'input' || activeElement.tagName.toLowerCase() === 'textarea')) {
-        activeElement.value = correctedText;
-    }
+function startExtension() {
+    /* script code goes here */
+
+    // Example script ...
+    let banner = document.createElement("div");
+    banner.textContent = "!! hacked !!";
+    banner.style.cssText = "background: #2c3e50; color: white; padding: 10px; text-align: center; font-size: 16px; font-weight: bold;";
+
+    document.body.prepend(banner);
+
+    console.log("Authentiya - Running");
+}
+
+function verifyCanvasAPI(url) {
+    fetch(`${url}/api/v1/courses?per_page=1`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Authentiya - Canvas LMS detected at: ", url);
+            storeCanvasDomain(url);
+        } else {
+            console.log("Authentiya - Non-Canvas url detected.");
+        }
+    })
+    .catch(error => {
+        console.log("Authentiya - Error verifying Canvas url: ", error);
+    });
+}
+
+function storeCanvasDomain(newDomain) {
+    chrome.storage.sync.get(['canvas_domains'], result => {
+        let storedDomains = result.canvas_domains || [];
+
+        if (!storedDomains.includes(newDomain)) {
+            storedDomains.push(newDomain);
+            chrome.storage.sync.set({ canvas_domains: storedDomains }, () => {
+                console.log("Authentiya - Domain stored: " + domain);
+            });
+        }
+    });
 }
