@@ -31,6 +31,6 @@
     "permissions": [
         "activeTab",
         "storage",
-        "<https://your-backend-url.com/>"
+        "scripting"
     ]
 }
