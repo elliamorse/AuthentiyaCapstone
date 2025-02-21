@@ -19,11 +19,4 @@ chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.set(defaultSettings.sync, () => {
         console.log("Authentiya - Sync storage initialized: ", defaultSettings.sync);
     });
-
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ["js/content.js"]
-    }).then(() => console.log("content.js injected!"))
-    .catch(err => console.error("Injection error:", err));
-
 });
