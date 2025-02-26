@@ -1,36 +1,33 @@
 {
-    "manifest_version": 3,
-    "name": "Authentiya",
-    "description": "A Chrome extension AI detection.",
-    "version": "1.0",
-    "icons": {
-        "48": "assets/default.png"
-    },
-
-    "action": {
-        "default_icon": "assets/default.png",
-        "default_popup": "popup.html"
-    },
-    "background": {
-        "service_worker": "js/background.js"
-    },
-    "content_scripts": [
-        {
-            "matches": ["https://*/*"],
-            "js": ["js/content.js"],
-            "css": ["css/styles.css"],
-            "run_at": "document_start"
-        }
-    ],
-    "web_accessible_resources": [
-        {
-            "resources": ["js/content.js"],
-            "matches": ["https://*/*"]
-        }
-    ],
-    "permissions": [
-        "activeTab",
-        "storage",
-        "scripting"
-    ]
+	"manifest_version": 3,
+	"name": "Authentiya",
+	"description": "Proof of student authorship",
+	"version": "1.0",
+	"background": {
+		"service_worker": "scripts/background.js"
+	},
+	"permissions": [
+		"storage",
+		"unlimitedStorage"
+	],
+	"content_scripts": [
+		{
+			"matches": [
+				"*://*/*"
+			],
+			"js": [
+				"scripts/content.js"
+			]
+		}
+	],
+	"action": {
+		"default_popup": "popup.html"
+	},
+	"icons": {
+		"48": "assets/default.png"
+	},
+	"options_ui": {
+		"page": "options.html",
+		"open_in_tab": true
+	}
 }
