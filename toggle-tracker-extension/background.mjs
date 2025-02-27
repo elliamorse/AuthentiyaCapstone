@@ -1,20 +1,19 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "./firebase";
-import { getFirestore, collection, addDoc } from "./firebase";
-
+import { initializeApp } from "firebase/app";
+//import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAHotgvkFL1Aef1xfT8lh_igc-jE9Je1Jw",
-  authDomain: "ai-writing-detector.firebaseapp.com",
-  projectId: "ai-writing-detector",
-  storageBucket: "ai-writing-detector.appspot.com",
-  messagingSenderId: "471920182981",
-  appId: "1:471920182981:web:d11fb40b3332668dfe12ac",
-  measurementId: "G-G60STPS385"
+  apiKey: "AIzaSyDA5pLCjs64O1nW6FxG1cxEkJR9Qiv2yAI",
+  authDomain: "authentiya.firebaseapp.com",
+  projectId: "authentiya",
+  storageBucket: "authentiya.firebasestorage.app",
+  messagingSenderId: "1083502008022",
+  appId: "1:1083502008022:web:f399c8b739a7b085c0db77",
+  measurementId: "G-9EMYYPCLG1"
 };
 
 // Initialize Firebase
