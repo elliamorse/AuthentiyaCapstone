@@ -15,6 +15,11 @@ const createNewSession = async () => {
 };
 
 const convertToCSV = (objArray) => {
+    if (!objArray || !objArray.data){
+        console.error("convertToCSV: Invalid input, objArray is undefined or missing 'data' property.");
+        return "";
+    }
+
     let data = objArray.data;
     let label = objArray.label;
     let csv = label.join(",") + "\n";
