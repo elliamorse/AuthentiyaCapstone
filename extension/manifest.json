@@ -1,0 +1,36 @@
+{
+	"manifest_version": 3,
+	"name": "Authentiya",
+	"description": "Proof of student authorship",
+	"version": "1.0",
+	"background": {
+		"service_worker": "scripts/background.js",
+		"type": "module"
+	},
+	"permissions": [
+    "storage",
+    "unlimitedStorage",
+    "clipboardWrite",
+    "alarms"
+],
+	"content_scripts": [
+		{
+			"matches": [
+				"*://*/*"
+			],
+			"js": [
+				"scripts/content.js"
+			]
+		}
+	],
+	"action": {
+		"default_popup": "popup.html"
+	},
+	"icons": {
+		"48": "assets/default.png"
+	},
+	"options_ui": {
+		"page": "options.html",
+		"open_in_tab": true
+	}
+}
