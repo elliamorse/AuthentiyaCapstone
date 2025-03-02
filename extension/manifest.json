@@ -4,12 +4,15 @@
 	"description": "Proof of student authorship",
 	"version": "1.0",
 	"background": {
-		"service_worker": "scripts/background.js"
+		"service_worker": "scripts/background.js",
+		"type": "module"
 	},
 	"permissions": [
-		"storage",
-		"unlimitedStorage"
-	],
+    "storage",
+    "unlimitedStorage",
+    "clipboardWrite",
+    "alarms"
+],
 	"content_scripts": [
 		{
 			"matches": [

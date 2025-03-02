@@ -33,3 +33,21 @@ saveBtn.addEventListener("click", async () => {
     );
     dlAnchorElem.click();
 });
+
+chrome.storage.local.get("toggleTrackingData", function (data) {
+    let toggleState = data.toggleTrackingData?.slice(-1)[0]?.state || "off";
+    const toggleSwitch = document.getElementById("toggle-tracking");
+    if (toggleSwitch) toggleSwitch.checked = toggleState === "on";
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleSwitch = document.getElementById("toggle-tracking");
+    if (toggleSwitch) {
+        toggleSwitch.addEventListener("change", function () {
+            const newState = toggleSwitch.checked ? "on" : "off";
+            const timestamp = new Date().toISOString();
+            chrome.runtime.sendMessage({ action: "track_toggle", state: newState, timestamp: timestamp });
+        });
+    }
+});
+
