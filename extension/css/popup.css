@@ -1,16 +1,18 @@
+/* Body Styles */
 body {
-    margin: 0;
+    margin: 0; /* Remove default margin */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased; /* Improve font rendering on WebKit-based browsers */
+    -moz-osx-font-smoothing: grayscale; /* Improve font rendering on Firefox for macOS */
     min-width: 300px;
     min-height: 200px;
     background: url('assets\art-deco.jpg') no-repeat center center fixed; /* Add your art-deco asset here */
-    background-size: cover;
+    background-size: cover; /* Make sure the background image covers the whole screen */
 }
 
+/* Container Styles */
 .container {
     background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
     height: auto;
@@ -22,6 +24,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Content Section Styles */
 .content {
     display: flex;
     flex-direction: column;
@@ -31,6 +34,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Styling for divs inside the .content section */
 .content div {
     flex: 1;
     display: flex;
@@ -38,6 +42,7 @@ body {
     align-items: center;
 }
 
+/* Code Block Styling */
 .code-blocks span {
     background-color: rgb(95, 116, 160);
     padding: 10px;
@@ -49,6 +54,7 @@ body {
     font-family: 'Courier New', Courier, monospace;
 }
 
+/* Title Styles */
 #title {
     font-size: 24px; /* Adjust the size as needed */
     font-weight: bold;
@@ -59,6 +65,7 @@ body {
     color: maroon; /* Maroon color for the title */
 }
 
+/* Button Styles */
 .btn {
     font-size: 14px;
     background-color: #333; /* Darker charcoal background */
@@ -70,11 +77,13 @@ body {
     border-radius: 5px;
 }
 
+/* Button Hover Effects */
 .btn:hover {
     background-color: #555; /* Slightly lighter charcoal on hover */
     transform: translateY(-2px);
 }
 
+/* Button Active State */
 .btn:active {
     background-color: #222; /* Even darker on active */
     transform: translateY(0);
