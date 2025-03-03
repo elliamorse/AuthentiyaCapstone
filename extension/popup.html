@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Popup</title>
-    <link rel="stylesheet" href="css/popup.css">
+    <title>Popup</title> <!-- Title displayed in the browser tab -->
+    <link rel="stylesheet" href="css/popup.css"> <!-- Custom CSS for popup styling -->
+     <!-- Bootstrap for UI styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
+    <!-- Main Container for Popup Content -->
     <div class="container">
         <div class="content pb-2">
+            <!-- Section for Displaying the Session Key -->
             <div class="code-blocks">
-                <span id="code-input">SESSION-KEY</span>
+                <span id="code-input">SESSION-KEY</span> <!-- Placeholder for session key -->
             </div>
+            <!-- Action Buttons -->
             <div class="d-grid gap-2">
-                <button class="btn btn-outline-secondary btn-sm" type="button" id="copy-btn">Copy</button>
-                <button class="btn btn-outline-success btn-sm" type="button" id="save-btn">Save Session</button>
-                <a type="button" id="download-btn" hidden>Delete Session</a>
-                <button class="btn btn-dark btn-sm" type="button" id="reset-btn">New Session</button>
+                <button class="btn btn-outline-secondary btn-sm" type="button" id="copy-btn">Copy</button> <!-- Copies session key -->
+                <button class="btn btn-outline-success btn-sm" type="button" id="save-btn">Save Session</button> <!-- Saves the session -->
+                <a type="button" id="download-btn" hidden>Delete Session</a> <!-- Hidden delete session button -->
+                <button class="btn btn-dark btn-sm" type="button" id="reset-btn">New Session</button> <!-- Resets session -->
             </div>
             <!-- Toggle Switch for Tracking -->
             <div class="form-check form-switch mt-3">
-                <input class="form-check-input" type="checkbox" id="toggle-tracking">
-                <label class="form-check-label" for="toggle-tracking">Toggle Tracking</label>
+                <input class="form-check-input" type="checkbox" id="toggle-tracking"> <!-- Checkbox for toggling tracking -->
+                <label class="form-check-label" for="toggle-tracking">Toggle Tracking</label> <!-- Label for the switch -->
             </div>
         </div>
     </div>
-    <script src="scripts/shared.js"></script>
-    <script src="scripts/popup.js"></script>
+    <!-- JavaScript Files -->
+    <script src="scripts/shared.js"></script> <!-- Shared utility functions -->
+    <script src="scripts/popup.js"></script> <!-- Popup-specific functionality -->
 </body>
 </html>
