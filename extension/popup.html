@@ -1,108 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Authentiya</title>
-  <link rel="stylesheet" href="css/popup.css">
+    <link rel="stylesheet" href="css/popup.css">
 </head>
 <body>
-  <div class="extension-container">
-    <div class="extension-header">
-      <div class="logo">
-        <span class="logo-icon">📝</span>
-        <span>Authentiya</span>
-      </div>
-      <div class="settings-icon">⚙️</div>
+    <!-- Top Navigation Tabs -->
+    <div class="tab-navigation">
+        <button class="tab-button active" data-tab="session">Current Session</button>
+        <button class="tab-button" data-tab="citations">Citations</button>
+        <button class="tab-button" data-tab="settings">Settings</button>
     </div>
     
-    <div class="content-container">
-      <!-- Initial view (before session start) -->
-      <div id="pre-session-view">
-        <div class="assignment-selector">
-          <div class="selector-label">Track for:</div>
-          <select id="class-select">
-            <option value="">Select a course...</option>
-            <option value="cs101">CS 101: Intro to Computer Science</option>
-            <option value="cs201">CS 201: Data Structures</option>
-            <option value="cs310">CS 310: Algorithms</option>
-            <option value="cs450">CS 450: Operating Systems</option>
-            <option value="eng101">ENG 101: Composition</option>
-            <option value="eng201">ENG 201: Academic Writing</option>
-            <option value="eng305">ENG 305: Creative Writing</option>
-            <option value="hist150">HIST 150: Modern World History</option>
-            <option value="hist210">HIST 210: American History</option>
-            <option value="hist320">HIST 320: European History</option>
-            <option value="math101">MATH 101: College Algebra</option>
-            <option value="math201">MATH 201: Calculus I</option>
-            <option value="phys101">PHYS 101: Intro to Physics</option>
-            <option value="psyc220">PSYC 220: Cognitive Psychology</option>
-          </select>
-          
-          <select id="assignment-select">
-            <option value="">Select an assignment...</option>
-            <!-- Will be populated dynamically based on class selection -->
-          </select>
+    <!-- Main App Container with Sidebar and Content -->
+    <div class="app-container">
+        <!-- Sidebar for History Navigation -->
+        <div class="sidebar">
+            <h3>History</h3>
+            <button class="sidebar-button active" data-view="current">Current Session</button>
+            <button class="sidebar-button" data-view="today">Today</button>
+            <button class="sidebar-button" data-view="week">This Week</button>
+            <button class="sidebar-button" data-view="month">This Month</button>
+            <div class="toggle-container">
+                <label class="switch">
+                    <input type="checkbox" id="toggle-tracking">
+                    <span class="slider round"></span>
+                </label>
+                <span>Tracking Enabled</span>
+            </div>
         </div>
         
-        <div class="button-container">
-          <button class="primary-button" id="start-session-btn">Start Session</button>
-        </div>
-      </div>
-      
-      <!-- Active session view -->
-      <div id="active-session-view" style="display: none;">
-        <div class="metrics-card">
-          <div class="metrics-header">
-            <div class="metrics-title">Current Session</div>
-            <div class="status-indicator status-active">
-              <div class="status-dot"></div>
-              <div>Active</div>
-            </div>
-          </div>
-          
-          <div class="metrics-grid">
-            <div class="metric-item">
-              <div class="metric-label">Word Count</div>
-              <div class="metric-value" id="word-count">0</div>
-              <div class="metric-unit">words</div>
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Session Tab Content -->
+            <div id="session-tab" class="tab-content active">
+                <div class="session-info">
+                    <h2 id="title">Current Session</h2>
+                    <div id="code-input" class="code-blocks">
+                        <span>Loading session key...</span>
+                    </div>
+                    <div class="actions">
+                        <button id="copy-btn" class="btn">Copy Session Key</button>
+                        <button id="reset-btn" class="btn">New Session</button>
+                        <button id="save-btn" class="btn">Save Data</button>
+                        <button id="discard-session-btn" class="btn" style="font-size: smaller;">Discard Session</button> <!-- New Button -->
+                    </div>
+                </div>
+                
+                <div class="session-data">
+                    <h3>Current Activity</h3>
+                    <table class="data-table">
+                        <thead id="table-header">
+                            <tr>
+                                <th>Type</th>
+                                <th>Key</th>
+                                <th>Timestamp</th>
+                                <th>Website</th>
+                                <th>Element</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Dynamic content will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
             
-            <div class="metric-item">
-              <div class="metric-label">Active Time</div>
-              <div class="metric-value" id="active-time">00:00</div>
-              <div class="metric-unit">minutes:seconds</div>
+            <!-- Citations Tab Content -->
+            <div id="citations-tab" class="tab-content">
+                <h2>Citations</h2>
+                <div id="citations-container">
+                    <!-- Citations will be loaded here -->
+                </div>
             </div>
-          </div>
-          
-          <div class="session-info">
-            <span class="session-info-icon">⏱️</span>
-            <span id="session-start">Started today at --:-- --</span>
-          </div>
+            
+            <!-- Settings Tab Content -->
+            <div id="settings-tab" class="tab-content">
+                <h2>Settings</h2>
+                <div class="settings-options">
+                    <div class="settings-option">
+                        <h3>Data Storage</h3>
+                        <p>Choose how long to keep your data:</p>
+                        <select id="data-retention">
+                            <option value="session">Current Session Only</option>
+                            <option value="day">24 Hours</option>
+                            <option value="week">One Week</option>
+                            <option value="month">One Month</option>
+                            <option value="forever">Forever</option>
+                        </select>
+                    </div>
+                    <div class="settings-option">
+                        <h3>Privacy</h3>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="anonymize-urls">
+                            <label for="anonymize-urls">Anonymize URLs in stored data</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="store-locally">
+                            <label for="store-locally">Store all data locally only</label>
+                        </div>
+                    </div>
+                    <div class="settings-option">
+                        <button id="clear-data" class="btn">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="current-field-card">
-          <div class="field-label">Current Input Field</div>
-          <div class="field-name" id="field-name">--</div>
-          <div class="field-url" id="field-url">--</div>
-        </div>
-        
-        <div class="assignment-info-card">
-          <div class="field-label">Assignment</div>
-          <div class="assignment-name" id="current-assignment">--</div>
-          <div class="course-name" id="current-course">--</div>
-        </div>
-        
-        <div class="button-container">
-          <button class="primary-button" id="submit-session-btn">Submit & Download Report</button>
-        </div>
-      </div>
-      
-      <div class="footer">
-        Data is stored locally in your browser
-      </div>
     </div>
-  </div>
-  <script src="scripts/shared.js"></script>
-  <script src="scripts/popup.js"></script>
+    
+    <!-- Hidden download link for CSV export -->
+    <a id="download-btn" style="display: none;"></a>
+    
+    <!-- Scripts -->
+    <script src="scripts/shared.js"></script>
+    <script src="scripts/citations.js"></script>
+    <script src="scripts/popup.js"></script>
 </body>
 </html>

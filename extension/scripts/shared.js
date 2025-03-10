@@ -60,23 +60,58 @@ const getSessionKey = async () => {
 const DATA_LABELS = ["type", "key", "timestamp", "hostname", "elementID", "elementName"];
 
 /**
- * Opens the options page.
+ * Format a timestamp into a readable date/time string
+ * @param {number} timestamp - Unix timestamp
+ * @returns {string} Formatted date string
  */
-function openOptionsPage() {
-    if (chrome.runtime.openOptionsPage) {
-      chrome.runtime.openOptionsPage();
-    } else {
-      window.open(chrome.runtime.getURL('options.html'));
-    }
-  }
+function formatTimestamp(timestamp) {
+    const date = new Date(parseInt(timestamp));
+    return date.toLocaleString();
+}
 
-  /**
- * Opens the options page.
+/**
+ * Filter data based on time period
+ * @param {Array} data - Array of data rows
+ * @param {string} timePeriod - Time period to filter by ('today', 'week', 'month')
+ * @returns {Array} Filtered data rows
  */
-function openOptionsPage() {
-    if (chrome.runtime.openOptionsPage) {
-      chrome.runtime.openOptionsPage();
-    } else {
-      window.open(chrome.runtime.getURL('options.html'));
-    }
-  }
+function filterDataByTime(data, timePeriod) {
+    if (!data || !Array.isArray(data)) return [];
+    
+    const now = new Date();
+    return data.filter(row => {
+        const timestamp = new Date(parseInt(row[2]));
+        
+        switch(timePeriod) {
+            case 'today':
+                return timestamp.toDateString() === now.toDateString();
+            case 'week':
+                const weekAgo = new Date();
+                weekAgo.setDate(now.getDate() - 7);
+                return timestamp >= weekAgo;
+            case 'month':
+                const monthAgo = new Date();
+                monthAgo.setMonth(now.getMonth() - 1);
+                return timestamp >= monthAgo;
+            default:
+                return true;
+        }
+    });
+}
+
+/**
+ * Create a citation record for copied content
+ * @param {string} text - Copied text
+ * @param {string} url - Source URL
+ * @param {Date} timestamp - When the copy occurred
+ * @returns {Object} Citation record
+ */
+function createCitation(text, url, timestamp) {
+    return {
+        text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+        url: url,
+        title: document.title || url,
+        timestamp: timestamp.toISOString(),
+        formatted: `"${text.substring(0, 100)}${text.length > 100 ? '...' : ''}" from ${document.title || url}`
+    };
+}
