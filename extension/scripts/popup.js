@@ -1,6 +1,7 @@
 // DOM Elements
 const startSessionBtn = document.getElementById('start-session-btn');
 const submitSessionBtn = document.getElementById('submit-session-btn');
+const discardSessionBtn = document.getElementById('discard-session-btn');
 const settingsIcon = document.querySelector('.settings-icon');
 const wordCount = document.getElementById('word-count');
 const activeTime = document.getElementById('active-time');
@@ -13,7 +14,6 @@ const currentCourse = document.getElementById('current-course');
 const currentAssignment = document.getElementById('current-assignment');
 const preSessionView = document.getElementById('pre-session-view');
 const activeSessionView = document.getElementById('active-session-view');
-const discardSessionButton = document.getElementById('discard-session-btn'); // New Button
 
 // Session data
 let sessionActive = false;
@@ -25,7 +25,102 @@ let keystrokeData = [];
 
 // Assignment data structure
 const assignmentOptions = {
-  // ... existing assignment options ...
+  cs101: [
+    { value: 'cs101-hw1', label: 'Homework 1: Intro to Programming' },
+    { value: 'cs101-hw2', label: 'Homework 2: Variables and Data Types' },
+    { value: 'cs101-hw3', label: 'Homework 3: Control Structures' },
+    { value: 'cs101-proj1', label: 'Project 1: Simple Calculator' },
+    { value: 'cs101-midterm', label: 'Midterm Project' },
+    { value: 'cs101-final', label: 'Final Project: Text-based Game' }
+  ],
+  cs201: [
+    { value: 'cs201-hw1', label: 'Homework 1: Arrays and Lists' },
+    { value: 'cs201-hw2', label: 'Homework 2: Stacks and Queues' },
+    { value: 'cs201-hw3', label: 'Homework 3: Trees and Graphs' },
+    { value: 'cs201-proj1', label: 'Project: Custom Data Structure' },
+    { value: 'cs201-final', label: 'Final Project: Advanced Data Structure Implementation' }
+  ],
+  cs310: [
+    { value: 'cs310-hw1', label: 'Homework 1: Algorithm Analysis' },
+    { value: 'cs310-hw2', label: 'Homework 2: Sorting Algorithms' },
+    { value: 'cs310-hw3', label: 'Homework 3: Graph Algorithms' },
+    { value: 'cs310-proj1', label: 'Project: Algorithm Implementation' },
+    { value: 'cs310-final', label: 'Final Project: Algorithm Optimization' }
+  ],
+  cs450: [
+    { value: 'cs450-hw1', label: 'Homework 1: Processes and Threads' },
+    { value: 'cs450-hw2', label: 'Homework 2: Memory Management' },
+    { value: 'cs450-hw3', label: 'Homework 3: File Systems' },
+    { value: 'cs450-proj1', label: 'Project: Shell Implementation' },
+    { value: 'cs450-final', label: 'Final Project: Mini OS Component' }
+  ],
+  eng101: [
+    { value: 'eng101-essay1', label: 'Essay 1: Personal Narrative' },
+    { value: 'eng101-essay2', label: 'Essay 2: Comparative Analysis' },
+    { value: 'eng101-essay3', label: 'Essay 3: Argumentative Paper' },
+    { value: 'eng101-final', label: 'Final Portfolio' }
+  ],
+  eng201: [
+    { value: 'eng201-essay1', label: 'Midterm Research Paper' },
+    { value: 'eng201-essay2', label: 'Literary Analysis' },
+    { value: 'eng201-essay3', label: 'Critical Response Essay' },
+    { value: 'eng201-annotated', label: 'Annotated Bibliography' },
+    { value: 'eng201-final', label: 'Final Thesis Draft' }
+  ],
+  eng305: [
+    { value: 'eng305-story1', label: 'Short Story 1' },
+    { value: 'eng305-story2', label: 'Short Story 2' },
+    { value: 'eng305-poetry', label: 'Poetry Collection' },
+    { value: 'eng305-novel', label: 'Novel Chapter' },
+    { value: 'eng305-final', label: 'Final Portfolio' }
+  ],
+  hist150: [
+    { value: 'hist150-paper1', label: 'Paper 1: Industrial Revolution' },
+    { value: 'hist150-paper2', label: 'Paper 2: World War Analysis' },
+    { value: 'hist150-paper3', label: 'Paper 3: Cold War Impact' },
+    { value: 'hist150-midterm', label: 'Midterm Paper' },
+    { value: 'hist150-final', label: 'Final Research Paper' }
+  ],
+  hist210: [
+    { value: 'hist210-paper1', label: 'Paper 1: Colonial America' },
+    { value: 'hist210-paper2', label: 'Paper 2: Civil War Analysis' },
+    { value: 'hist210-paper3', label: 'Paper 3: 20th Century America' },
+    { value: 'hist210-final', label: 'Final Research Project' }
+  ],
+  hist320: [
+    { value: 'hist320-paper1', label: 'Paper 1: Renaissance Period' },
+    { value: 'hist320-paper2', label: 'Paper 2: French Revolution' },
+    { value: 'hist320-paper3', label: 'Paper 3: European Imperialism' },
+    { value: 'hist320-final', label: 'Final Research Thesis' }
+  ],
+  math101: [
+    { value: 'math101-hw1', label: 'Homework 1: Linear Equations' },
+    { value: 'math101-hw2', label: 'Homework 2: Quadratics' },
+    { value: 'math101-hw3', label: 'Homework 3: Functions' },
+    { value: 'math101-final', label: 'Final Problem Set' }
+  ],
+  math201: [
+    { value: 'math201-hw1', label: 'Homework 1: Limits' },
+    { value: 'math201-hw2', label: 'Homework 2: Derivatives' },
+    { value: 'math201-hw3', label: 'Homework 3: Integrals' },
+    { value: 'math201-proj', label: 'Applied Calculus Project' },
+    { value: 'math201-final', label: 'Final Problem Set' }
+  ],
+  phys101: [
+    { value: 'phys101-hw1', label: 'Homework 1: Mechanics' },
+    { value: 'phys101-hw2', label: 'Homework 2: Energy' },
+    { value: 'phys101-hw3', label: 'Homework 3: Waves' },
+    { value: 'phys101-lab1', label: 'Lab Report 1' },
+    { value: 'phys101-lab2', label: 'Lab Report 2' },
+    { value: 'phys101-final', label: 'Final Lab Project' }
+  ],
+  psyc220: [
+    { value: 'psyc220-paper1', label: 'Paper 1: Perception and Attention' },
+    { value: 'psyc220-paper2', label: 'Paper 2: Memory Systems' },
+    { value: 'psyc220-paper3', label: 'Paper 3: Decision Making' },
+    { value: 'psyc220-study', label: 'Research Study Design' },
+    { value: 'psyc220-final', label: 'Final Research Paper' }
+  ]
 };
 
 // Initialize 
@@ -45,8 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event Listeners
   startSessionBtn.addEventListener('click', startSession);
   submitSessionBtn.addEventListener('click', submitSession);
+  discardSessionBtn.addEventListener('click', discardSession);
   settingsIcon.addEventListener('click', openOptions);
-  discardSessionButton.addEventListener('click', resetSession); // Attach event listener to the new button
 });
 
 // Functions
@@ -170,6 +265,17 @@ function submitSession() {
       alert('No keystroke data found for this session.');
     }
   });
+}
+
+function discardSession() {
+  // Confirm with user before discarding
+  if (confirm('Are you sure you want to discard this session? All data will be lost.')) {
+    // Reset session state
+    resetSession();
+    
+    // Show confirmation
+    alert('Session has been discarded.');
+  }
 }
 
 function generateReportCSV(sessionReport) {

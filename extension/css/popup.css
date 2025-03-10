@@ -294,3 +294,20 @@ body {
     font-size: 13px;
     color: #999;
   }
+
+  /* Add to extension/css/popup.css */
+.discard-link {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.discard-link a {
+  color: #999;
+  text-decoration: none;
+}
+
+.discard-link a:hover {
+  color: #ff6b6b;
+  text-decoration: underline;
+}

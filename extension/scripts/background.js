@@ -3,6 +3,9 @@ chrome.runtime.onInstalled.addListener(async () => {
     createNewSession();
 });
 
+// Define DATA_LABELS if missing
+const DATA_LABELS = ["type", "key", "timestamp", "hostname", "elementID", "elementName"];
+
 // Listen for messages from the content scripts and handle events
 let keystrokes = [];
 chrome.runtime.onMessage.addListener(function (msg, sender, response) {
@@ -13,21 +16,15 @@ chrome.runtime.onMessage.addListener(function (msg, sender, response) {
 
     // Detect and log copy-paste events
     if (msg.action === "record_copy" || msg.action === "record_paste") {
-        console.log(`Logging ${msg.action} event to Firestore`, msg.data);
+        console.log(`Logging ${msg.action} event`, msg.data);
 
-        // Log the copy-paste event to Firestore
-        addDoc(collection(db, "copy_paste_logs"), {
-            type: msg.data.type,    // Type of action (copy or paste)
-            text: msg.data.text,    // Copied or pasted text
-            timestamp: msg.data.timestamp,    // Time when the event occurred
-            url: msg.data.url    // URL where the event happened
-        }).then(() => {
-            console.log("Copy-Paste event logged successfully!");
-        }).catch((error) => {
-            console.error("Error logging copy-paste event:", error);
-        });
+        // Add code here if you want to send to external service
     }
+    
+    // Pass response to keep the message channel open for async operations
+    return true;
 });
+
 // Handle keystroke recording event and store data in Chrome local storage
 const handleRecordEvent = (msg) => {
     chrome.storage.local.get(["keystrokeData"], async function (result) {
@@ -45,33 +42,29 @@ const handleRecordEvent = (msg) => {
     });
 };
 
-// Function to create a new session (Previously in shared.js)
+// Function to create a new session
 function createNewSession() {
     console.log("New session created");
+    chrome.storage.local.remove(['sessionData', 'keystrokeData']);
 }
 
-// Import Firebase as an ES module
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-// Import Firebase config **(Ensure config.js is properly ignored in GitHub)**
-import firebaseConfig from "./config.js"; 
-
-// Initialize Firebase and Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-console.log("Firebase initialized in service worker");
-
-// Store toggle switch state changes in Firestore
-async function logToggle(toggleName, state, timestamp) {
+// Store toggle switch state changes locally
+function logToggle(toggleName, state, timestamp) {
     try {
-        // Save toggle state change to Firestore database
-        await addDoc(collection(db, "toggle_tracking"), {
-            toggleName: toggleName,    // Name of the toggle switch
-            state: state,    // The new state
-            timestamp: timestamp    // The timestamp when the toggle changed
+        console.log(`Logged toggle: ${toggleName} turned ${state} at ${timestamp}`);
+        
+        // Store locally instead of Firestore
+        chrome.storage.local.get("toggleTrackingData", function (data) {
+            let history = data.toggleTrackingData || [];
+            history.push({ 
+                toggleName: toggleName,    // Name of the toggle switch
+                state: state,    // The new state
+                timestamp: timestamp    // The timestamp when the toggle changed
+            });
+            
+            // Save the updated history to Chrome storage
+            chrome.storage.local.set({ toggleTrackingData: history });
         });
-        console.log(`Logged to Firestore: ${toggleName} turned ${state} at ${timestamp}`);
     } catch (error) {
         console.error("Error logging toggle:", error);
     }
@@ -80,29 +73,33 @@ async function logToggle(toggleName, state, timestamp) {
 // Listen for messages from content or popup scripts
 chrome.runtime.onMessage.addListener(function (msg, sender, response) {
     if (msg.action === "track_toggle") {
-        // Log the toggle state change to Firestore
+        // Log the toggle state change
         logToggle("Tracking Toggle", msg.state, msg.timestamp);
-        
-        // Also store toggle data locally
-        chrome.storage.local.get("toggleTrackingData", function (data) {
-            let history = data.toggleTrackingData || [];
-            history.push({ state: msg.state, timestamp: msg.timestamp });
-            // Save the updated history to Chrome storage
-            chrome.storage.local.set({ toggleTrackingData: history });
-            console.log("Toggle Event Saved:", msg);
-        });
     }
+    
+    if (msg.action === "session_started") {
+        console.log("Session started:", msg.data);
+        // You could initialize resources for the session here
+    }
+    
+    if (msg.action === "session_ended") {
+        console.log("Session ended");
+        // Clean up any session resources here
+    }
+    
+    // Return true to keep the message channel open for async operations
+    return true;
 });
 
 // Keep the service worker alive using alarms
 chrome.alarms.create("keepAlive", { periodInMinutes: 5 });
+
 // Event listener for alarm events to prevent service worker from shutting down
 chrome.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === "keepAlive") {
         console.log("Keeping service worker alive");
     }
 });
-
 
 // Listen for Google Docs detection
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
@@ -120,20 +117,13 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
       });
     }
     
-    if (msg.action === "session_started") {
-      console.log("Session started:", msg.data);
-      // You could log session start events here
-    }
-    
-    if (msg.action === "session_ended") {
-      console.log("Session ended");
-      // You could clean up any session resources here
-    }
-  });
+    // Return true to keep the message channel open for async operations
+    return true;
+});
   
-  // Handle notification button clicks
-  chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+// Handle notification button clicks
+chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
     if (buttonIndex === 0) { // "Start Tracking" button
-      chrome.action.openPopup();
+        chrome.action.openPopup();
     }
-  });
+});
