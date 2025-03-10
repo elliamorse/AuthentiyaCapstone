@@ -171,7 +171,15 @@ function startSession() {
   sessionStartTime = new Date();
   sessionStartTimeFormatted = formatTime(sessionStartTime);
   activeSessionTime = 0;
-  keystrokeData = [];
+  
+  // Clear keystroke data to start fresh
+  chrome.storage.local.get(['keystrokeData'], (result) => {
+    let keystrokeData = {
+      label: ["type", "key", "timestamp", "hostname", "elementID", "elementName"],
+      data: []
+    };
+    chrome.storage.local.set({ keystrokeData });
+  });
   
   // Update UI
   preSessionView.style.display = 'none';
@@ -255,7 +263,7 @@ function submitSession() {
       
       // Convert to CSV and download
       const csv = generateReportCSV(sessionReport);
-      downloadCSV(csv, `authentia_report_${Date.now()}.csv`);
+      downloadCSV(csv, `authentiya_report_${Date.now()}.csv`);
       
       // Reset session
       resetSession();
@@ -277,16 +285,24 @@ function generateReportCSV(sessionReport) {
   // Add keystroke data
   csv += 'EVENT TYPE,KEY,TIMESTAMP,HOSTNAME,ELEMENT ID,ELEMENT NAME\n';
   
-  sessionReport.keystrokeData.forEach(dataRow => {
-    const sanitizedRow = dataRow.map(field => {
-      // Sanitize fields for CSV (wrap in quotes, escape quotes)
-      if (typeof field === 'string') {
-        return `"${field.replace(/"/g, '""')}"`;
+  if (sessionReport.keystrokeData && sessionReport.keystrokeData.length > 0) {
+    sessionReport.keystrokeData.forEach(dataRow => {
+      // Safety check - ensure dataRow is an array
+      if (Array.isArray(dataRow)) {
+        const sanitizedRow = dataRow.map(field => {
+          // Sanitize fields for CSV (wrap in quotes, escape quotes)
+          if (field === null || field === undefined) {
+            return '""';
+          }
+          if (typeof field === 'string') {
+            return `"${field.replace(/"/g, '""')}"`;
+          }
+          return `"${field}"`;
+        });
+        csv += sanitizedRow.join(',') + '\n';
       }
-      return field;
     });
-    csv += sanitizedRow.join(',') + '\n';
-  });
+  }
   
   return csv;
 }
@@ -362,7 +378,7 @@ function saveSessionData() {
     sessionActive,
     sessionStartTime: sessionStartTime?.toISOString(),
     activeSessionTime,
-    wordCount: parseInt(wordCount.textContent),
+    wordCount: parseInt(wordCount.textContent) || 0,
     currentField: {
       name: fieldName.textContent,
       url: fieldUrl.textContent
