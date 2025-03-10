@@ -1,3 +1,37 @@
+// Detect Google Docs
+function checkForGoogleDocs() {
+  const isGoogleDocs = window.location.hostname === 'docs.google.com' && 
+                       window.location.pathname.includes('/document/d/');
+  
+  if (isGoogleDocs) {
+    // Check if we have an active session already
+    chrome.storage.local.get(['sessionData'], (result) => {
+      if (!result.sessionData || !result.sessionData.sessionActive) {
+        // Send message to background script about Google Doc detection
+        chrome.runtime.sendMessage({
+          from: 'content',
+          subject: 'google_doc_detected',
+          data: {
+            url: window.location.href,
+            title: document.title
+          }
+        });
+      }
+    });
+  }
+}
+
+// Run detection when page loads
+window.addEventListener('load', checkForGoogleDocs);
+
+
+
+
+
+
+
+
+
 // Track active input field and send information to popup
 document.addEventListener('focusin', function(event) {
     const element = event.target;

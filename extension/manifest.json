@@ -11,6 +11,8 @@
     "storage",
     "unlimitedStorage",
     "clipboardWrite",
+	"notifications",
+	"activeTab",
     "alarms"
 ],
 	"content_scripts": [

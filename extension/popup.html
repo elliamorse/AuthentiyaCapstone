@@ -16,62 +16,85 @@
     </div>
     
     <div class="content-container">
-      <div class="assignment-selector">
-        <div class="selector-label">Track for:</div>
-        <select id="class-select">
-          <option value="">Select a course...</option>
-          <option value="cs101">CS 101: Intro to Computer Science</option>
-          <option value="eng201" selected>ENG 201: Academic Writing</option>
-          <option value="hist150">HIST 150: Modern World History</option>
-          <option value="psyc220">PSYC 220: Cognitive Psychology</option>
-        </select>
-        
-        <select id="assignment-select">
-          <option value="">Select an assignment...</option>
-          <option value="eng201-essay1" selected>Midterm Research Paper</option>
-          <option value="eng201-essay2">Literary Analysis</option>
-          <option value="eng201-final">Final Thesis Draft</option>
-        </select>
-      </div>
-      
-      <div class="metrics-card">
-        <div class="metrics-header">
-          <div class="metrics-title">Current Session</div>
-          <div class="status-indicator status-active" id="tracking-status">
-            <div class="status-dot"></div>
-            <div>Active</div>
-          </div>
+      <!-- Initial view (before session start) -->
+      <div id="pre-session-view">
+        <div class="assignment-selector">
+          <div class="selector-label">Track for:</div>
+          <select id="class-select">
+            <option value="">Select a course...</option>
+            <option value="cs101">CS 101: Intro to Computer Science</option>
+            <option value="cs201">CS 201: Data Structures</option>
+            <option value="cs310">CS 310: Algorithms</option>
+            <option value="cs450">CS 450: Operating Systems</option>
+            <option value="eng101">ENG 101: Composition</option>
+            <option value="eng201">ENG 201: Academic Writing</option>
+            <option value="eng305">ENG 305: Creative Writing</option>
+            <option value="hist150">HIST 150: Modern World History</option>
+            <option value="hist210">HIST 210: American History</option>
+            <option value="hist320">HIST 320: European History</option>
+            <option value="math101">MATH 101: College Algebra</option>
+            <option value="math201">MATH 201: Calculus I</option>
+            <option value="phys101">PHYS 101: Intro to Physics</option>
+            <option value="psyc220">PSYC 220: Cognitive Psychology</option>
+          </select>
+          
+          <select id="assignment-select">
+            <option value="">Select an assignment...</option>
+            <!-- Will be populated dynamically based on class selection -->
+          </select>
         </div>
         
-        <div class="metrics-grid">
-          <div class="metric-item">
-            <div class="metric-label">Word Count</div>
-            <div class="metric-value" id="word-count">0</div>
-            <div class="metric-unit">words</div>
+        <div class="button-container">
+          <button class="primary-button" id="start-session-btn">Start Session</button>
+        </div>
+      </div>
+      
+      <!-- Active session view -->
+      <div id="active-session-view" style="display: none;">
+        <div class="metrics-card">
+          <div class="metrics-header">
+            <div class="metrics-title">Current Session</div>
+            <div class="status-indicator status-active">
+              <div class="status-dot"></div>
+              <div>Active</div>
+            </div>
           </div>
           
-          <div class="metric-item">
-            <div class="metric-label">Active Time</div>
-            <div class="metric-value" id="active-time">00:00</div>
-            <div class="metric-unit">minutes:seconds</div>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <div class="metric-label">Word Count</div>
+              <div class="metric-value" id="word-count">0</div>
+              <div class="metric-unit">words</div>
+            </div>
+            
+            <div class="metric-item">
+              <div class="metric-label">Active Time</div>
+              <div class="metric-value" id="active-time">00:00</div>
+              <div class="metric-unit">minutes:seconds</div>
+            </div>
+          </div>
+          
+          <div class="session-info">
+            <span class="session-info-icon">⏱️</span>
+            <span id="session-start">Started today at --:-- --</span>
           </div>
         </div>
         
-        <div class="session-info">
-          <span class="session-info-icon">⏱️</span>
-          <span id="session-start">Started today at --:-- --</span>
+        <div class="current-field-card">
+          <div class="field-label">Current Input Field</div>
+          <div class="field-name" id="field-name">--</div>
+          <div class="field-url" id="field-url">--</div>
         </div>
-      </div>
-      
-      <div class="current-field-card">
-        <div class="field-label">Current Input Field</div>
-        <div class="field-name" id="field-name">--</div>
-        <div class="field-url" id="field-url">--</div>
-      </div>
-      
-      <div class="button-group">
-        <button class="primary-button" id="toggle-btn">Pause Tracking</button>
-        <button class="secondary-button" id="reset-btn">Reset Session</button>
+        
+        <div class="assignment-info-card">
+          <div class="field-label">Assignment</div>
+          <div class="assignment-name" id="current-assignment">--</div>
+          <div class="course-name" id="current-course">--</div>
+        </div>
+        
+        <div class="button-container">
+          <button class="primary-button" id="submit-session-btn">Submit & Download Report</button>
+        </div>
       </div>
       
       <div class="footer">

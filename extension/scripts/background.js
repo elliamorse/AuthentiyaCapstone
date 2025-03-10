@@ -102,3 +102,38 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         console.log("Keeping service worker alive");
     }
 });
+
+
+// Listen for Google Docs detection
+chrome.runtime.onMessage.addListener((msg, sender, response) => {
+    if (msg.from === "content" && msg.subject === "google_doc_detected") {
+      // Create a notification to prompt the user
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'assets/default.png',
+        title: 'Authentiya - Document Detected',
+        message: 'A new document has been opened. Would you like to track your work on this document?',
+        buttons: [
+          { title: 'Start Tracking' }
+        ],
+        priority: 2
+      });
+    }
+    
+    if (msg.action === "session_started") {
+      console.log("Session started:", msg.data);
+      // You could log session start events here
+    }
+    
+    if (msg.action === "session_ended") {
+      console.log("Session ended");
+      // You could clean up any session resources here
+    }
+  });
+  
+  // Handle notification button clicks
+  chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+    if (buttonIndex === 0) { // "Start Tracking" button
+      chrome.action.openPopup();
+    }
+  });
