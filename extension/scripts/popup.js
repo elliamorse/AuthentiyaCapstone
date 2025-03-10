@@ -1,69 +1,200 @@
-// Get references to the buttons and session key display element
-const copyBtn = document.getElementById("copy-btn"); // copy button
-const resetBtn = document.getElementById("reset-btn"); // new session button
-const saveBtn = document.getElementById("save-btn"); // save session button
-const codeInput = document.getElementById("code-input"); // session key display area
+// DOM Elements
+const toggleBtn = document.getElementById('toggle-btn');
+const resetBtn = document.getElementById('reset-btn');
+const settingsIcon = document.querySelector('.settings-icon');
+const trackingStatus = document.getElementById('tracking-status');
+const wordCount = document.getElementById('word-count');
+const activeTime = document.getElementById('active-time');
+const sessionStart = document.getElementById('session-start');
+const fieldName = document.getElementById('field-name');
+const fieldUrl = document.getElementById('field-url');
+const classSelect = document.getElementById('class-select');
+const assignmentSelect = document.getElementById('assignment-select');
 
-// Load the stored session key from Chrome's local storage
-chrome.storage.local.get(["sessionKey"], async function (result) {
-    if (result.sessionKey) {
-        // If a session key exists, display it in the popup UI
-        codeInput.innerHTML = result.sessionKey;
+// Session data
+let isTracking = true;
+let sessionStartTime = new Date();
+let sessionStartTimeFormatted = formatTime(sessionStartTime);
+let activeSessionTime = 0;
+let activeSessionTimer;
+
+// Initialize session
+document.addEventListener('DOMContentLoaded', () => {
+  // Load session data from storage
+  chrome.storage.local.get(['sessionData'], (result) => {
+    if (result.sessionData) {
+      const data = result.sessionData;
+      isTracking = data.isTracking;
+      sessionStartTime = new Date(data.sessionStartTime);
+      sessionStartTimeFormatted = formatTime(sessionStartTime);
+      activeSessionTime = data.activeSessionTime || 0;
+      
+      // Update UI
+      updateTrackingUI();
+      updateSessionStartUI();
+      
+      if (data.wordCount) {
+        wordCount.textContent = data.wordCount;
+      }
+      
+      if (data.currentField) {
+        fieldName.textContent = data.currentField.name || 'essay-submission-form';
+        fieldUrl.textContent = data.currentField.url || 'canvas.university.edu/assignments/24601';
+      }
+      
+      if (data.selectedCourse) {
+        classSelect.value = data.selectedCourse;
+      }
+      
+      if (data.selectedAssignment) {
+        assignmentSelect.value = data.selectedAssignment;
+      }
     } else {
-        // If no session key exists, generate and display a new session key
-        codeInput.innerHTML = await createNewSession();
+      // Initialize new session
+      initializeNewSession();
     }
-});
-// Event listener for new session button
-resetBtn.addEventListener("click", async () => {
-    // When clicked, generate and display a new session key
-    codeInput.innerHTML = await createNewSession();
+    
+    // Start timer if tracking is active
+    if (isTracking) {
+      startTimer();
+    }
+  });
 });
 
-// Event listener for copy button
-copyBtn.addEventListener("click", () => {
-    // Retrieve the session key from storage and copy it to the clipboard
-    chrome.storage.local.get(["sessionKey"], function (result) {
-        navigator.clipboard.writeText(result.sessionKey);
-    });
-});
-// Event listener for save session button
-saveBtn.addEventListener("click", async () => {
-    // Retrieve stored keystroke data
-    let data = await chrome.storage.local.get(["keystrokeData"]);
-    // Convert the keystroke data to CSV format
-    let csv = convertToCSV(data.keystrokeData);
-    // Prepare the CSV data as a downloadable link
-    let dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-    // Get the hidden download button
-    let dlAnchorElem = document.getElementById("download-btn");
-    //Set the download attributes
-    dlAnchorElem.setAttribute("href", dataStr);
-    dlAnchorElem.setAttribute(
-        "download",
-        `${await getSessionKey()}-${Date.now()}.csv`
-    );
-    // Simulate a click on the hidden link to trigger the download
-    dlAnchorElem.click();
-});
-// Load the last saved state of the tracking toggle switch from storage
-chrome.storage.local.get("toggleTrackingData", function (data) {
-    let toggleState = data.toggleTrackingData?.slice(-1)[0]?.state || "off";
-    const toggleSwitch = document.getElementById("toggle-tracking");
-    if (toggleSwitch) toggleSwitch.checked = toggleState === "on";
-});
-// Event listener for toggle switch changes
-document.addEventListener("DOMContentLoaded", function () {
-    const toggleSwitch = document.getElementById("toggle-tracking");
-    if (toggleSwitch) {
-        toggleSwitch.addEventListener("change", function () {
-            // Determine the new state of the toggle switch
-            const newState = toggleSwitch.checked ? "on" : "off";
-            // Generate a timestamp for the toggle change
-            const timestamp = new Date().toISOString();
-            // Send a message to the background script to log the tracking state change
-            chrome.runtime.sendMessage({ action: "track_toggle", state: newState, timestamp: timestamp });
-        });
-    }
-});
+// Event Listeners
+toggleBtn.addEventListener('click', toggleTracking);
+resetBtn.addEventListener('click', initializeNewSession);
+settingsIcon.addEventListener('click', openOptions);
+classSelect.addEventListener('change', saveSelections);
+assignmentSelect.addEventListener('change', saveSelections);
 
+// Functions
+function toggleTracking() {
+  isTracking = !isTracking;
+  updateTrackingUI();
+  saveSessionData();
+  
+  if (isTracking) {
+    startTimer();
+  } else {
+    clearInterval(activeSessionTimer);
+  }
+  
+  // Send message to background script
+  chrome.runtime.sendMessage({
+    action: 'track_toggle',
+    state: isTracking ? 'on' : 'off',
+    timestamp: new Date().toISOString()
+  });
+}
+
+function updateTrackingUI() {
+  if (isTracking) {
+    toggleBtn.textContent = 'Pause Tracking';
+    trackingStatus.className = 'status-indicator status-active';
+    trackingStatus.innerHTML = '<div class="status-dot"></div><div>Active</div>';
+  } else {
+    toggleBtn.textContent = 'Resume Tracking';
+    trackingStatus.className = 'status-indicator status-paused';
+    trackingStatus.innerHTML = '<div class="status-dot"></div><div>Paused</div>';
+  }
+}
+
+function updateSessionStartUI() {
+  sessionStart.textContent = `Started today at ${sessionStartTimeFormatted}`;
+}
+
+function initializeNewSession() {
+  // Reset session data
+  isTracking = true;
+  sessionStartTime = new Date();
+  sessionStartTimeFormatted = formatTime(sessionStartTime);
+  activeSessionTime = 0;
+  
+  // Update UI
+  updateTrackingUI();
+  updateSessionStartUI();
+  wordCount.textContent = '0';
+  activeTime.textContent = '00:00';
+  
+  // Clear timer and start new one
+  clearInterval(activeSessionTimer);
+  startTimer();
+  
+  // Save new session
+  saveSessionData();
+  
+  // Create new session key
+  createNewSession();
+}
+
+function startTimer() {
+  // Clear any existing timer
+  clearInterval(activeSessionTimer);
+  
+  // Start new timer
+  activeSessionTimer = setInterval(() => {
+    if (isTracking) {
+      activeSessionTime += 1;
+      updateTimeDisplay();
+    }
+  }, 1000);
+}
+
+function updateTimeDisplay() {
+  const minutes = Math.floor(activeSessionTime / 60);
+  const seconds = activeSessionTime % 60;
+  activeTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function formatTime(date) {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12;
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+  return `${formattedHours}:${formattedMinutes} ${ampm}`;
+}
+
+function saveSelections() {
+  saveSessionData();
+}
+
+function saveSessionData() {
+  const sessionData = {
+    isTracking,
+    sessionStartTime: sessionStartTime.toISOString(),
+    activeSessionTime,
+    wordCount: parseInt(wordCount.textContent),
+    currentField: {
+      name: fieldName.textContent,
+      url: fieldUrl.textContent
+    },
+    selectedCourse: classSelect.value,
+    selectedAssignment: assignmentSelect.value
+  };
+  
+  chrome.storage.local.set({ sessionData });
+}
+
+function openOptions() {
+  if (chrome.runtime.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else {
+    window.open(chrome.runtime.getURL('options.html'));
+  }
+}
+
+// Update field info when content script sends updates
+chrome.runtime.onMessage.addListener((message, sender, response) => {
+  if (message.from === 'content' && message.subject === 'update_field_info') {
+    fieldName.textContent = message.data.elementName || message.data.elementID || 'essay-submission-form';
+    fieldUrl.textContent = message.data.hostname || 'canvas.university.edu/assignments/24601';
+    saveSessionData();
+  }
+  
+  if (message.from === 'content' && message.subject === 'update_word_count') {
+    wordCount.textContent = message.data.count;
+    saveSessionData();
+  }
+});

@@ -58,3 +58,14 @@ const getSessionKey = async () => {
  * Predefined labels used for structured data collection.
  */
 const DATA_LABELS = ["type", "key", "timestamp", "hostname", "elementID", "elementName"];
+
+/**
+ * Opens the options page.
+ */
+function openOptionsPage() {
+    if (chrome.runtime.openOptionsPage) {
+      chrome.runtime.openOptionsPage();
+    } else {
+      window.open(chrome.runtime.getURL('options.html'));
+    }
+  }
