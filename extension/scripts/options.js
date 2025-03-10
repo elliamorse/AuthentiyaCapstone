@@ -1,6 +1,7 @@
 // Get references to the table header and body elements in the DOM
 const headerElement = document.getElementById("table-header");
 const bodyElement = document.getElementById("table-body");
+const assignmentDropdown = document.getElementById("assignment-dropdown");
 
 /**
  * Generates the table header HTML using provided labels.
@@ -51,5 +52,27 @@ const renderTable = async () => {
     bodyElement.innerHTML = table;
 };
 
-// Call function to render the table on page load
+/**
+ * Fetches courses from Chrome's sync storage and populates the assignment dropdown.
+ */
+const populateAssignmentDropdown = async () => {
+    let data = await chrome.storage.sync.get(["courses"]);
+    let courses = data?.courses; // Extract stored courses
+
+    // If courses are missing, exit function
+    if (!courses) {
+        return;
+    }
+
+    // Populate the dropdown with courses
+    courses.forEach(course => {
+        let option = document.createElement("option");
+        option.text = course.name || "Unnamed Course";
+        option.value = course.id;
+        assignmentDropdown.appendChild(option);
+    });
+};
+
+// Call functions to render the table and populate the dropdown on page load
 renderTable();
+populateAssignmentDropdown();
