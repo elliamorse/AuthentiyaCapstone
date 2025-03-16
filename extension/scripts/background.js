@@ -1,3 +1,41 @@
+/**
+ * @file background.js
+ * @description This script is responsible for handling background tasks for the Authentiya extension.
+ *              It listens for extension installation, manages keystroke events, and handles notifications related to document tracking.
+ * 
+ * @author Ellia Morse
+ * @created February 26th
+ * @revised March 9th
+ *
+ * @preconditions
+ * - The Authentiya extension must be installed in the Chrome browser.
+ * - The content script must be active to send messages to the background script.
+ *
+ * @inputs
+ * - Messages from content scripts containing keystroke data and document detection information.
+ *
+ * @outputs
+ * - Notifications to the user when a new Google Doc is detected.
+ * - Keystroke data saved to Chrome local storage.
+ *
+ * @postconditions
+ * - Keystroke data is stored in Chrome's local storage, allowing the extension to track typing behavior.
+ * - Notifications prompt the user to start tracking their work in a document.
+ *
+ * @returns {void}
+ *
+ * @errors & Exceptions
+ * - If there is an issue saving to Chrome local storage, the keystroke data might not persist.
+ * 
+ * @sideEffects
+ * - Local storage is cleared and a new session is created whenever a new session starts.
+ *
+ * @invariants
+ * - The extension will always maintain a unique session identified by a session key.
+ * 
+ * @knownFaults
+ * - N/A
+ */
 // When the extension is installed, create a new session
 chrome.runtime.onInstalled.addListener(async () => { 
     createNewSession();
