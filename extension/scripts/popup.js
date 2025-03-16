@@ -1,72 +1,58 @@
-/*
- * -----------------------------------------------------------------------------
- * Code Artifact: Authentiya Session Tracking and Reporting
- * Description: This script is part of the Authentiya Chrome extension. It tracks 
- * the active session time, keystrokes, and word count while a user works on an 
- * assignment. The data collected during the session is saved locally and can 
- * be submitted in the form of a CSV report, including course, assignment, 
- * word count, session duration, and keystroke data.
- * 
+/**
+ * @file popup.js
+ * @description This script manages the behavior of the Chrome extension's popup interface. 
+ *              It interacts with the background script to display session status, including 
+ *              session duration, word count, and active keystrokes. The script provides 
+ *              controls for starting and stopping the session, as well as for downloading 
+ *              the session's CSV report. The popup also displays relevant data pulled 
+ *              from local storage and communicates with other extension components.
+ *
  * Author: Ellia Morse
  * Date Created: Feb 26, 2025
  * Last Revised: March 9, 2025
  * Revision History:
  * - March 9, 2025: fixing bugs by Ellia Morse
- * 
- * Preconditions:
- * - The user must be logged in to the extension, with the Chrome extension 
- *   installed and active.
- * - The user must have a valid class and assignment selected.
- * - Keystroke tracking is enabled and functional.
- * - Local storage must be accessible and functional for session data and 
- *   keystroke data.
- * 
- * Acceptable Input Values:
- * - `classSelect` (HTML element): A select element containing valid course 
- *   options (e.g., "cs101", "eng101").
- * - `assignmentSelect` (HTML element): A select element containing valid 
- *   assignment options for the selected course.
- * - `wordCount` (HTML element): A number representing the word count for 
- *   the session.
- * 
- * Unacceptable Input Values:
- * - Invalid values in `classSelect` or `assignmentSelect` (e.g., empty, 
- *   non-existent options) will trigger an alert to the user.
- * 
- * Postconditions:
- * - The active session will be tracked for time, word count, and keystrokes.
- * - Upon submitting the session, a CSV report will be generated and 
- *   downloaded.
- * 
- * Return Values:
- * - `startSession`: void - Initializes session data and starts a timer.
- * - `submitSession`: void - Ends the session, generates a CSV report, and 
- *   resets the session.
- * - `generateReportCSV`: string - A CSV string containing session data and 
- *   keystrokes.
- * - `downloadCSV`: void - Triggers a download of the generated CSV file.
- * 
- * Error and Exception Conditions:
- * - If there is no valid class or assignment selected when starting a session, 
- *   an alert will be displayed and the session will not start.
- * - If no keystroke data is found when submitting a session, an alert will be 
- *   displayed indicating no data is available for the report.
- * 
- * Side Effects:
- * - Updates the UI to reflect the active session, including session start 
- *   time, active time, and selected course/assignment.
- * - Saves session data to local storage periodically to ensure data persistence.
- * - Notifies the background script to start or end session tracking.
- * 
- * Invariants:
- * - `sessionActive`: A boolean indicating if the session is currently active 
- *   or not.
- * - `sessionStartTime`: A Date object representing the time when the session 
- *   started.
- * - `activeSessionTime`: An integer representing the number of seconds the 
- *   session has been active.
- * - `keystrokeData`: An array holding keystroke event data during the session.
- * 
+ *
+ * @preconditions
+ * - The user must have the extension installed and enabled in Chrome.
+ * - Keystroke tracking must be active and functional.
+ * - Local storage must be available to store session data.
+ *
+ * @inputs
+ * - Chrome's local storage (containing session and keystroke data).
+ * - HTML elements that display session data and provide user interaction (e.g., buttons for 
+ *   starting and stopping the session, a link to download the CSV report).
+ *
+ * @outputs
+ * - Updated user interface reflecting the current session state.
+ * - CSV report download triggered when the user submits the session data.
+ *
+ * @postconditions
+ * - The popup reflects the current status of the session, including elapsed time and word count.
+ * - A CSV file containing the session data can be downloaded when the user completes the session.
+ *
+ * @returns {void}
+ * - `startSession`: Starts tracking session data and updates the popup UI.
+ * - `stopSession`: Ends the session, generates a CSV report, and triggers the download.
+ * - `updatePopupUI`: Updates the popup with the current session's statistics and status.
+ * - `downloadCSV`: Starts the download of the CSV file generated from the session data.
+ *
+ * @errors & Exceptions
+ * - If the session data is not available, the popup may fail to load or display incomplete data.
+ * - Errors in local storage access or background script communication may prevent the popup from updating.
+ * - If no active session is available when attempting to stop or download the report, an error message may be shown.
+ *
+ * @sideEffects
+ * - The popup interface is updated to show the latest session data in real-time.
+ * - Local storage is modified when session data is saved or updated.
+ * - Background scripts are triggered to interact with the tracking system (e.g., starting/stopping tracking).
+ *
+ * @invariants
+ * - `sessionActive`: A boolean indicating whether the session is currently active.
+ * - `sessionStartTime`: Timestamp of when the session started.
+ * - `wordCount`: Tracks the total word count during the session.
+ * - `keystrokeData`: An array of keystroke events recorded during the session
+ 
  * Known Faults:
  * - If local storage is cleared or disabled, session data may be lost, 
  *   requiring the user to restart the session tracking.
