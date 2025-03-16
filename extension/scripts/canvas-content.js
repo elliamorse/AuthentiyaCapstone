@@ -1,3 +1,46 @@
+/**
+ * @file content.js
+ * @description This script is responsible for interacting with the Canvas LMS web page. It retrieves enrolled courses 
+ *              using the Canvas API and stores them in Chrome's sync storage. It also handles Canvas domain verification 
+ *              and displays the courses in a user-friendly format.
+ *
+ * @author Fatima Avila
+ * @created March 9th
+ * @revised March 15th - Comments added by Deborah Onuosa
+ *
+ * @preconditions
+ * - The user must be visiting a Canvas LMS domain.
+ * - The Authentiya extension must be installed and active in the browser.
+ * 
+ * @inputs
+ * - Messages from the background script (e.g., requests to get courses).
+ * - The current page's URL must belong to Canvas LMS for the script to proceed.
+ *
+ * @outputs
+ * - A banner indicating "hacked" is shown to the user when the extension is activated.
+ * - A list of courses is displayed on the screen from Canvas LMS API data.
+ * - The Canvas domain is stored in Chrome storage for future use.
+ *
+ * @postconditions
+ * - Canvas LMS domain is stored in Chrome sync storage for future sessions.
+ * - Enrolled courses are fetched and displayed for the user.
+ *
+ * @returns {void}
+ *
+ * @errors & Exceptions
+ * - If the Canvas API request fails, courses won't be retrieved or displayed.
+ * - If the page is not a Canvas LMS page, the script will terminate early.
+ * 
+ * @sideEffects
+ * - Displays a "hacked" banner when the extension is activated.
+ * - Creates a new UI element showing enrolled courses, which is appended to the page.
+ *
+ * @invariants
+ * - The extension will only activate and show the banner on valid Canvas domains.
+ *
+ * @knownFaults
+ * - The course display may not work if there are issues with the Canvas API or if the user is not enrolled in any courses.
+ */
 console.log("Authentiya - content.js injection test");
 
 // Store current page's domain
