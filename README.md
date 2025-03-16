@@ -1,7 +1,7 @@
 Visit the repo for the web view at https://github.com/elliamorse/authentiya
 
 
-About Authentiya
+About Authentiya:
 Authentiya is a browser extension designed to solve the challenge of maintaining academic integrity in an AI-powered world. With the rise of AI tools, schools are increasingly concerned about student learning and potential plagiarism. Authentiya provides a seamless solution that:
 
 Runs in the background like Grammarly
