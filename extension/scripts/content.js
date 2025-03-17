@@ -186,3 +186,16 @@ document.addEventListener("keydown", function (event) {
       }
     }
   });
+document.addEventListener("copy", () => {
+    let copiedText = document.getSelection().toString();
+    if (copiedText) {
+        chrome.runtime.sendMessage({ type: "COPY_EVENT", text: copiedText });
+    }
+});
+
+document.addEventListener("paste", (event) => {
+    let pastedText = (event.clipboardData || window.clipboardData).getData("text");
+    if (pastedText) {
+        chrome.runtime.sendMessage({ type: "PASTE_EVENT", text: pastedText });
+    }
+});
