@@ -5,7 +5,7 @@
  *
  * @author Ellia Morse
  * @created February 26th
- * @revised March 9th
+ * @revised March 16th
  *
  * @preconditions
  * - The user must be on a Google Docs page (i.e., `docs.google.com`).
@@ -18,9 +18,11 @@
  *   - `update_word_count` (the current word count of the input field)
  *   - `record_event` (key events, such as `keydown` and `keyup`)
  * - DOM events, such as `load`, `focusin`, `keydown`, and `keyup`.
+ * - Detects user keystrokes ('keydown', 'keyup') and clipboard events ('copy', 'paste').
  *
  * @outputs
  * - Messages to the background script with event data for Google Docs detection, field information, and key event tracking.
+ * - Sends detected clipboard events to 'background.js' for processing and storage.
  *
  * @postconditions
  * - Sends messages to the background script when a Google Docs document is detected.
