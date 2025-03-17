@@ -6,7 +6,7 @@
  * 
  * @author Ellia Morse
  * @created February 26th
- * @revised March 9th
+ * @revised March 16th
  *
  * @preconditions
  * - The Authentiya extension must be installed in the Chrome browser.
@@ -14,10 +14,13 @@
  *
  * @inputs
  * - Messages from content scripts containing keystroke data, clipboard events, and document detection information.
+ * - Messages from 'content.js' with clipboard event data ('COPY_EVENT', 'PASTE_EVENT').
  *
  * @outputs
  * - Notifications to the user when a new Google Doc is detected.
  * - Keystroke and clipboard data saved to Chrome local storage.
+ * - Stores clipboard events in Chrome's local storage.
+ * - Notifies 'popup.js' to update the clipboard history display.
  *
  * @postconditions
  * - Keystroke and clipboard data are stored in Chrome's local storage, allowing the extension to track typing behavior.
