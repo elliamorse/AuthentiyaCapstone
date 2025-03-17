@@ -21,11 +21,14 @@
  * @inputs
  * - Chrome's local storage (containing session and keystroke data).
  * - HTML elements that display session data and provide user interaction (e.g., buttons for 
- *   starting and stopping the session, a link to download the CSV report).
+ * - Starting and stopping the session, a link to download the CSV report).
+ * - Retrieves clipboard history from 'background.js' via 'chrome.storage.local.get'.
  *
  * @outputs
  * - Updated user interface reflecting the current session state.
  * - CSV report download triggered when the user submits the session data.
+ * - Display clipboard events in the popup UI.
+ * - Updates dynamically when new clipboard events occur.
  *
  * @postconditions
  * - The popup reflects the current status of the session, including elapsed time and word count.
