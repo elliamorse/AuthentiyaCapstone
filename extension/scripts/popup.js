@@ -65,6 +65,7 @@ const startSessionBtn = document.getElementById('start-session-btn');
 const submitSessionBtn = document.getElementById('submit-session-btn');
 const settingsIcon = document.querySelector('.settings-icon');
 const wordCount = document.getElementById('word-count');
+const clipboardList = document.getElementById('clipboard-list');
 const activeTime = document.getElementById('active-time');
 const sessionStart = document.getElementById('session-start');
 const fieldName = document.getElementById('field-name');
@@ -479,3 +480,18 @@ chrome.runtime.onMessage.addListener((message, sender, response) => {
     chrome.action.openPopup();
   }
 });
+
+updateClipboardUI();
+
+// Update clipboard history UI
+function updateClipboardUI() {
+  chrome.storage.local.get({ clipboardHistory: [] }, (data) => {
+      clipboardList.innerHTML = ""; // Clear the list first
+      data.clipboardHistory.slice(0, 5).forEach((entry) => {
+          let listItem = document.createElement("li");
+          listItem.textContent = `[${entry.type}] ${entry.text} (${entry.time})`;
+          clipboardList.appendChild(listItem);
+      });
+  });
+}
+
